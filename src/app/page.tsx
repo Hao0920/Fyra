@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useMemo, useState } from 'react';
 import { useTransactionStore } from '@/stores/useTransactionStore';
 import { useAccountStore } from '@/stores/useAccountStore';
@@ -5,11 +7,17 @@ import { useProjectStore } from '@/stores/useProjectStore';
 import { useBudgetStore } from '@/stores/useBudgetStore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import { Button } from '@/components/ui/button';
 import { formatCurrency, formatDate, getMonthRange } from '@/lib/utils';
-import { ArrowDownLeft, ArrowUpRight, Wallet, Target } from 'lucide-react';
+import { ArrowDownLeft, ArrowUpRight, Wallet, Target, Plus } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as ReTooltip } from 'recharts';
+import Link from 'next/link';
 
 const COLORS = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#8b5cf6', '#ec4899'];
+
+function cn(...classes: (string | false | undefined)[]) {
+  return classes.filter(Boolean).join(' ');
+}
 
 export default function Dashboard() {
   const { transactions, load } = useTransactionStore();
@@ -48,7 +56,7 @@ export default function Dashboard() {
   const recentTransactions = useMemo(() => transactions.slice(0, 10), [transactions]);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 pb-24">
       <div className="grid grid-cols-2 gap-3">
         <Card><CardHeader className="pb-2"><CardTitle className="text-xs font-normal text-muted-foreground flex items-center gap-1"><ArrowDownLeft className="h-3 w-3 text-green-500" />本月收入</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-green-600">{formatCurrency(monthlyStats.income)}</div></CardContent></Card>
         <Card><CardHeader className="pb-2"><CardTitle className="text-xs font-normal text-muted-foreground flex items-center gap-1"><ArrowUpRight className="h-3 w-3 text-red-500" />本月支出</CardTitle></CardHeader><CardContent><div className="text-2xl font-bold text-red-600">{formatCurrency(monthlyStats.expense)}</div></CardContent></Card>
@@ -73,6 +81,14 @@ export default function Dashboard() {
           </span>
         </div>
       ))}</CardContent></Card>
+
+      <div className="fixed bottom-6 right-6">
+        <Link href="/record">
+          <Button size="lg" className="h-14 w-14 rounded-full shadow-lg">
+            <Plus className="h-6 w-6" />
+          </Button>
+        </Link>
+      </div>
     </div>
   );
 }
@@ -88,8 +104,4 @@ function BudgetProgressItem({ budget }: { budget: import('@/types').Budget }) {
       <div className="flex justify-between text-xs text-muted-foreground"><span>剩余 {formatCurrency(progress.remaining)}</span><span>{Math.round(progress.progress * 100)}%</span></div>
     </div>
   );
-}
-
-function cn(...classes: (string | false | undefined)[]) {
-  return classes.filter(Boolean).join(' ');
 }

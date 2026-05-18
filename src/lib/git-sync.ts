@@ -46,9 +46,9 @@ export class GitSyncEngine {
 
         await this.fs.promises.writeFile(
           `${this.dir}/README.md`,
-          `# Fyra 记账数据
+          '# Fyra 记账数据
 
-此仓库由 Fyra 应用自动管理，请勿手动修改。`
+此仓库由 Fyra 应用自动管理，请勿手动修改。'
         );
         await git.add({ fs: this.fs, dir: this.dir, filepath: 'README.md' });
         await git.commit({
