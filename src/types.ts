@@ -17,6 +17,14 @@ export type Account = {
   status: string
 }
 
+export type Project = {
+  id: string
+  name: string
+  status: string
+  amount: string
+  date: string
+}
+
 export type SummaryMetric = {
   label: string
   value: string

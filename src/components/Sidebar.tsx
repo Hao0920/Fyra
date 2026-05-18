@@ -1,10 +1,14 @@
-export function Sidebar() {
+type Props = {
+  onAdd: () => void
+}
+
+export function Sidebar({ onAdd }: Props) {
   const navItems = [
     { label: '首页', icon: '🏠' },
+    { label: '项目', icon: '📋' },
+    { label: '账户', icon: '💼' },
     { label: '统计', icon: '📈' },
-    { label: '账单', icon: '🧾' },
-    { label: '预算', icon: '📊' },
-    { label: 'AI', icon: '🤖' },
+    { label: '设置', icon: '⚙️' },
   ]
 
   return (
@@ -20,7 +24,7 @@ export function Sidebar() {
         </div>
       </div>
 
-      <button className="inline-flex h-16 w-16 items-center justify-center rounded-3xl bg-slate-800/90 text-2xl text-slate-100 shadow-lg shadow-slate-950/30 transition hover:bg-slate-900">+</button>
+      <button onClick={onAdd} className="inline-flex h-16 w-16 items-center justify-center rounded-3xl bg-sky-500 text-3xl text-slate-950 shadow-lg shadow-sky-500/30 transition hover:bg-sky-400">+</button>
     </div>
   )
 }
