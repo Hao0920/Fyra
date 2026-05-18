@@ -2,23 +2,22 @@ import git from 'isomorphic-git';
 import http from 'isomorphic-git/http/web';
 import LightningFS from '@isomorphic-git/lightning-fs';
 import { db } from './db';
-import { encrypt, decrypt } from './crypto';
-import type { SyncConfig, SyncState } from '@/types';
+import type { SyncConfig } from '@/types';
 
 const DATA_FILE = 'data.json';
 
 export class GitSyncEngine {
-  private fs: LightningFS;
+  private fs: any;
   private dir: string;
   private config: SyncConfig;
 
   constructor(config: SyncConfig) {
     this.config = config;
     this.dir = `/fyra-${config.owner}-${config.repo}`;
-    this.fs = new LightningFS('fyra-fs');
+    this.fs = new (LightningFS as any)('fyra-fs');
   }
 
-  async init(): Promise<void> {
+  async init() {
     try {
       await this.fs.promises.mkdir(this.dir);
     } catch {
@@ -37,11 +36,6 @@ export class GitSyncEngine {
       });
     } catch (e: any) {
       if (e.message?.includes('not found')) {
-        try {
-          await this.fs.promises.mkdir(this.dir);
-        } catch {
-          // directory exists
-        }
         await git.init({ fs: this.fs, dir: this.dir, defaultBranch: this.config.branch });
       } else {
         throw e;
@@ -49,15 +43,11 @@ export class GitSyncEngine {
     }
   }
 
-  async sync(): Promise<<SyncState> {
+  async sync() {
     try {
       await this.pull();
-
       const data = await this.exportData();
-      const payload = this.config.encrypt && this.config.password
-        ? await encrypt(JSON.stringify(data), this.config.password)
-        : JSON.stringify(data, null, 2);
-
+      const payload = JSON.stringify(data, null, 2);
       await this.fs.promises.writeFile(`${this.dir}/${DATA_FILE}`, payload);
 
       const status = await git.status({ fs: this.fs, dir: this.dir, filepath: DATA_FILE });
@@ -69,7 +59,6 @@ export class GitSyncEngine {
           message: `sync: ${new Date().toISOString()}`,
           author: { name: 'Fyra', email: 'fyra@local' },
         });
-
         await git.push({
           fs: this.fs,
           http,
@@ -79,24 +68,13 @@ export class GitSyncEngine {
           onAuth: () => ({ username: this.config.token }),
         });
       }
-
-      return {
-        status: 'success',
-        lastSync: new Date().toISOString(),
-        error: null,
-        pendingChanges: 0,
-      };
+      return { status: 'success', lastSync: new Date().toISOString(), error: null, pendingChanges: 0 };
     } catch (e: any) {
-      return {
-        status: 'error',
-        lastSync: null,
-        error: e.message,
-        pendingChanges: 0,
-      };
+      return { status: 'error', lastSync: null, error: e.message, pendingChanges: 0 };
     }
   }
 
-  async pull(): Promise<void> {
+  async pull() {
     try {
       await git.pull({
         fs: this.fs,
@@ -108,25 +86,8 @@ export class GitSyncEngine {
         fastForwardOnly: true,
       });
     } catch {
-      // first time or no remote branch
+      // first time
     }
-  }
-
-  async restore(): Promise<void> {
-    const filePath = `${this.dir}/${DATA_FILE}`;
-    let raw: string;
-    try {
-      raw = await this.fs.promises.readFile(filePath, 'utf8');
-    } catch {
-      return; // file not found
-    }
-
-    const payload = this.config.encrypt && this.config.password
-      ? await decrypt(raw, this.config.password)
-      : raw;
-
-    const data = JSON.parse(payload);
-    await this.importData(data);
   }
 
   private async exportData() {
@@ -142,30 +103,4 @@ export class GitSyncEngine {
       settings: (await db.settings.toArray())[0],
     };
   }
-
-  private async importData(data: any) {
-    await db.transaction('rw',
-      [db.transactions, db.accounts, db.categories, db.projects, db.tags, db.budgets, db.settings],
-      async () => {
-        await db.transactions.clear();
-        await db.accounts.clear();
-        await db.categories.clear();
-        await db.projects.clear();
-        await db.tags.clear();
-        await db.budgets.clear();
-
-        if (data.transactions?.length) await db.transactions.bulkAdd(data.transactions);
-        if (data.accounts?.length) await db.accounts.bulkAdd(data.accounts);
-        if (data.categories?.length) await db.categories.bulkAdd(data.categories);
-        if (data.projects?.length) await db.projects.bulkAdd(data.projects);
-        if (data.tags?.length) await db.tags.bulkAdd(data.tags);
-        if (data.budgets?.length) await db.budgets.bulkAdd(data.budgets);
-        if (data.settings) await db.settings.put(data.settings);
-      }
-    );
-  }
-}
-
-export function createGitHubRepoUrl(owner: string, repo: string): string {
-  return `https://github.com/${owner}/${repo}`;
 }
