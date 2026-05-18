@@ -14,7 +14,7 @@ const COLORS = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#8b5cf6'
 export default function Dashboard() {
   const { transactions, load } = useTransactionStore();
   const { accounts, load: loadAccounts } = useAccountStore();
-  const { projects, load: loadProjects } = useProjectStore();
+  const { load: loadProjects } = useProjectStore();
   const { budgets, load: loadBudgets } = useBudgetStore();
   const [monthRange] = useState(() => getMonthRange(new Date()));
 

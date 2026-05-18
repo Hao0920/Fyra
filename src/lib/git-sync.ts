@@ -19,7 +19,11 @@ export class GitSyncEngine {
   }
 
   async init(): Promise<void> {
-    await this.fs.promises.mkdir(this.dir, { recursive: true });
+    try {
+      await this.fs.promises.mkdir(this.dir);
+    } catch {
+      // 目录已存在
+    }
 
     try {
       await git.clone({
@@ -33,12 +37,18 @@ export class GitSyncEngine {
       });
     } catch (e: any) {
       if (e.message?.includes('not found')) {
-        await this.fs.promises.mkdir(this.dir, { recursive: true });
+        try {
+          await this.fs.promises.mkdir(this.dir);
+        } catch {
+          // 目录已存在
+        }
         await git.init({ fs: this.fs, dir: this.dir, defaultBranch: this.config.branch });
 
         await this.fs.promises.writeFile(
           `${this.dir}/README.md`,
-          '# Fyra 记账数据\n\n此仓库由 Fyra 应用自动管理，请勿手动修改。'
+          '# Fyra 记账数据
+
+此仓库由 Fyra 应用自动管理，请勿手动修改。'
         );
         await git.add({ fs: this.fs, dir: this.dir, filepath: 'README.md' });
         await git.commit({
@@ -118,13 +128,13 @@ export class GitSyncEngine {
 
   async restore(): Promise<void> {
     const filePath = `${this.dir}/${DATA_FILE}`;
+    let raw: string;
     try {
-      await this.fs.promises.access(filePath);
+      raw = await this.fs.promises.readFile(filePath, 'utf8');
     } catch {
-      return;
+      return; // 文件不存在
     }
 
-    const raw = await this.fs.promises.readFile(filePath, 'utf8');
     const payload = this.config.encrypt && this.config.password
       ? await decrypt(raw, this.config.password)
       : raw;
@@ -148,7 +158,7 @@ export class GitSyncEngine {
   }
 
   private async importData(data: any) {
-    await db.transaction('rw', 
+    await db.transaction('rw',
       [db.transactions, db.accounts, db.categories, db.projects, db.tags, db.budgets, db.settings],
       async () => {
         await db.transactions.clear();

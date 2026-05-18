@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { isInstalled, canInstall, promptInstall } from '@/lib/pwa'
 import { Button } from '@/components/ui/button'
 import { Download, X, Smartphone } from 'lucide-react'
-import { cn } from '@/lib/utils'
 
 export function InstallPrompt() {
   const [show, setShow] = useState(false)
