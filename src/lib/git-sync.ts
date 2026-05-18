@@ -22,7 +22,7 @@ export class GitSyncEngine {
     try {
       await this.fs.promises.mkdir(this.dir);
     } catch {
-      // 目录已存在
+      // directory exists
     }
 
     try {
@@ -40,30 +40,16 @@ export class GitSyncEngine {
         try {
           await this.fs.promises.mkdir(this.dir);
         } catch {
-          // 目录已存在
+          // directory exists
         }
         await git.init({ fs: this.fs, dir: this.dir, defaultBranch: this.config.branch });
-
-        await this.fs.promises.writeFile(
-          `${this.dir}/README.md`,
-          '# Fyra 记账数据
-
-此仓库由 Fyra 应用自动管理，请勿手动修改。'
-        );
-        await git.add({ fs: this.fs, dir: this.dir, filepath: 'README.md' });
-        await git.commit({
-          fs: this.fs,
-          dir: this.dir,
-          message: 'init',
-          author: { name: 'Fyra', email: 'fyra@local' },
-        });
       } else {
         throw e;
       }
     }
   }
 
-  async sync(): Promise<SyncState> {
+  async sync(): Promise<<SyncState> {
     try {
       await this.pull();
 
@@ -122,7 +108,7 @@ export class GitSyncEngine {
         fastForwardOnly: true,
       });
     } catch {
-      // 首次或无远程分支
+      // first time or no remote branch
     }
   }
 
@@ -132,7 +118,7 @@ export class GitSyncEngine {
     try {
       raw = await this.fs.promises.readFile(filePath, 'utf8');
     } catch {
-      return; // 文件不存在
+      return; // file not found
     }
 
     const payload = this.config.encrypt && this.config.password
