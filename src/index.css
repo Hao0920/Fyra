@@ -22,7 +22,7 @@ body {
 }
 
 .card {
-  @apply rounded-[2.5rem] bg-slate-900/80 border border-slate-700/70 shadow-panel backdrop-blur-xl;
+  @apply rounded-[2.25rem] bg-[#071021] border border-slate-800/60 shadow-md backdrop-blur-xl;
 }
 
 .card:hover {

@@ -24,14 +24,14 @@ export function TransactionTable({ transactions }: Props) {
         </thead>
         <tbody>
           {transactions.map((item, index) => (
-            <tr key={item.id} className={index % 2 === 0 ? 'bg-slate-950/50' : 'bg-slate-900/70'}>
+            <tr key={item.id} className={`transition-colors hover:bg-slate-900/60 ${index % 2 === 0 ? 'bg-slate-950/50' : 'bg-slate-900/70'}`}>
               <td className="whitespace-nowrap px-6 py-4 text-slate-300">{item.date}</td>
               <td className="px-6 py-4 text-slate-100">{item.description}</td>
               <td className="px-6 py-4 text-slate-300">{item.category}</td>
               <td className="px-6 py-4 text-slate-300">{item.account}</td>
               <td className="px-6 py-4">
-                <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${badgeClasses[item.type]}`}>
-                  {item.type === 'expense' ? '-' : '+'}${Math.abs(item.amount).toFixed(2)}
+                <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${badgeClasses[item.type]}`}>
+                  {item.type === 'expense' ? '-' : '+'}¥{Math.abs(item.amount).toFixed(2)}
                 </span>
               </td>
             </tr>

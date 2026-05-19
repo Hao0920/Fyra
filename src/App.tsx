@@ -14,7 +14,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-slate-950 px-4 py-6 text-slate-100 sm:px-6 lg:px-8">
-      <div className="mx-auto grid max-w-[1900px] gap-6 xl:grid-cols-[96px_1.4fr_0.7fr]">
+      <div className="mx-auto grid max-w-[1900px] gap-6 xl:grid-cols-[96px_1.6fr_380px]">
         <aside className="hidden xl:block">
           <Sidebar onAdd={() => setShowQuickAdd(true)} />
         </aside>
