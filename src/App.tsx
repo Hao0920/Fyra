@@ -13,8 +13,8 @@ function App() {
   const [showQuickAdd, setShowQuickAdd] = useState(false)
 
   return (
-    <div className="min-h-screen bg-slate-950 px-4 py-6 text-slate-100 sm:px-6 lg:px-8">
-      <div className="mx-auto grid max-w-[1900px] gap-6 xl:grid-cols-[96px_1.6fr_380px]">
+    <div className="min-h-screen bg-slate-950 px-2 py-6 text-slate-100 sm:px-4 lg:px-6">
+      <div className="mx-auto grid w-full max-w-[2300px] gap-6 xl:grid-cols-[96px_1.6fr_420px]">
         <aside className="hidden xl:block">
           <Sidebar onAdd={() => setShowQuickAdd(true)} />
         </aside>
