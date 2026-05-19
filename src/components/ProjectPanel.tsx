@@ -9,8 +9,8 @@ export function ProjectPanel({ projects }: Props) {
     <div className="card overflow-hidden p-6">
       <div className="mb-6 flex items-center justify-between gap-4">
         <div>
-          <p className="text-xs uppercase tracking-[0.3em] text-slate-400">项目总览</p>
-          <h2 className="mt-2 text-2xl font-semibold text-slate-100">正在进行中</h2>
+          <p className="text-xs uppercase tracking-[0.3em] text-slate-400">进行中的项目</p>
+          <h2 className="mt-2 text-2xl font-semibold text-slate-100">今天的任务</h2>
         </div>
         <button className="rounded-full border border-slate-700/90 bg-slate-900/80 px-4 py-2 text-sm text-slate-200 transition hover:border-slate-500">
           + 新项目
